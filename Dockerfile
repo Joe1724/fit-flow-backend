@@ -1,5 +1,5 @@
-# Use PHP 8.3
-FROM php:8.3-cli
+# Use PHP 8.4
+FROM php:8.4-cli
 
 # 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,7 +32,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # 7.5. Dump optimized autoloader again to ensure all classes are mapped
-RUN composer dump-autoload --optimize --classmap-authoritative
+RUN composer dump-autoload --optimize --classmap-authoritative --ignore-platform-reqs
 
 # 8. GENERATE THE START SCRIPT
 # UPDATED: Changed 'migrate:fresh' to 'migrate' to save your data!
