@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBookingRequest extends FormRequest
+class StoreAttendanceRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,8 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'gym_class_id' => 'required|exists:gym_classes,id',
+            'method' => 'required|string|in:qr,biometric,manual',
         ];
     }
+
 }
