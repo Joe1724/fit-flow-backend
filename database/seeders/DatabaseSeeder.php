@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-// We are putting the logic DIRECTLY here to bypass the broken UserSeeder file.
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
