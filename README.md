@@ -1,7 +1,3 @@
-Here is the updated **README.md** with your specific GitHub repository URL included.
-
-You can copy and paste this entire block to replace your current file.
-
 ```markdown
 # 🏋️ FitFlow - Gym Management System API
 
@@ -15,6 +11,7 @@ A robust, full-stack REST API built with **Laravel** to manage modern gym operat
 -   **Booking System**: Members can book classes with automated capacity checks.
 -   **Attendance System**: Check-in/Check-out functionality (QR, Biometric, Manual).
 -   **Payments**: Record transactions and automatically activate subscriptions.
+-   **Data Privacy**: Full PII encryption (Name, Email) and secure blind indexing.
 
 ## 🛠️ Tech Stack
 
@@ -197,9 +194,12 @@ The API will be available at: `http://127.0.0.1:8000`
 
 ## 🛡️ Security
 
-* Passwords are hashed using Bcrypt.
-* API endpoints are protected using Laravel Sanctum middleware.
-* Validation rules prevent double-booking and duplicate payments.
+This API implements advanced security measures to protect user data:
+
+* **PII Encryption**: Sensitive fields like **Name** and **Email** are encrypted at rest using Laravel's encryption services (AES-256-CBC). If the database is compromised, user data remains unreadable.
+* **Blind Indexing**: Login lookups use a separate SHA-256 `email_hash` column. This allows the system to verify credentials without ever exposing or decrypting the full email list during queries.
+* **Access Control**: All private endpoints are protected by **Laravel Sanctum** middleware.
+* **Data Integrity**: Strict validation rules prevent double-booking and duplicate payments.
 
 ```
 
