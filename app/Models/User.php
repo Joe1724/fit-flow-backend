@@ -1,32 +1,49 @@
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+<?php
 
-public function login(Request $request)
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
 {
-    // 1. Validate Input
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    use HasApiTokens, HasFactory, Notifiable;
 
-    // 2. Find User using the HASH, not the plain email
-    // We hash the input email to match the 'email_hash' column in your DB
-    $user = User::where('email_hash', hash('sha256', $request->email))->first();
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'email_hash',
+        'password',
+        'role',
+    ];
 
-    // 3. Check Password
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'message' => 'Invalid Credentials'
-        ], 422);
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
-
-    // 4. Create Token (Success!)
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'message' => 'Login success',
-        'access_token' => $token,
-        'token_type' => 'Bearer',
-        'user' => $user,
-    ]);
 }
