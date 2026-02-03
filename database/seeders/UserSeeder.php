@@ -2,15 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+// FORCE UPDATE V2 - Fixes UserSeeder error
 use Illuminate\Database\Seeder;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         // 1. Create Admin
@@ -18,7 +16,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Admin User',
             'email' => $adminEmail,
-            'email_hash' => hash('sha256', $adminEmail), // <--- ADDED THIS
+            'email_hash' => hash('sha256', $adminEmail),
             'password' => Hash::make('password123'),
             'role' => 'admin',
         ]);
@@ -28,7 +26,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Coach Sarah',
             'email' => $coachEmail,
-            'email_hash' => hash('sha256', $coachEmail), // <--- ADDED THIS
+            'email_hash' => hash('sha256', $coachEmail),
             'password' => Hash::make('password123'),
             'role' => 'trainer',
         ]);
@@ -38,7 +36,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'John Member',
             'email' => $memberEmail,
-            'email_hash' => hash('sha256', $memberEmail), // <--- ADDED THIS
+            'email_hash' => hash('sha256', $memberEmail),
             'password' => Hash::make('password123'),
             'role' => 'member',
         ]);
