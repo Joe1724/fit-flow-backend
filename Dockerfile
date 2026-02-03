@@ -31,13 +31,15 @@ COPY . .
 # 7. Install dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# 8. GENERATE THE START SCRIPT (Fixes "File not found" error)
-# We write the script content directly into the container
+# 8. GENERATE THE START SCRIPT
+# UPDATED: Changed 'migrate:fresh' to 'migrate' to save your data!
+# ADDED: 'db:seed' to make sure test users are always there (optional, remove if not needed)
 RUN printf "#!/bin/bash\n\
 set -e\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
-php artisan migrate:fresh --force\n\
+php artisan migrate --force\n\
+php artisan db:seed --force\n\
 php artisan serve --host=0.0.0.0 --port=\$PORT" > start.sh
 
 # 9. Make it executable
