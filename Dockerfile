@@ -41,8 +41,6 @@ php artisan config:clear\n\
 php artisan cache:clear\n\
 php artisan config:cache\n\
 php artisan route:cache\n\
-php artisan migrate:fresh --force\n\
-php artisan db:seed --force\n\
 php artisan serve --host=0.0.0.0 --port=\$PORT" > start.sh
 
 # 9. Make it executable
