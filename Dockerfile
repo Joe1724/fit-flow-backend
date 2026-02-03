@@ -31,6 +31,9 @@ COPY . .
 # 7. Install dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
+# 7.5. Dump optimized autoloader again to ensure all classes are mapped
+RUN composer dump-autoload --optimize --classmap-authoritative
+
 # 8. GENERATE THE START SCRIPT
 # UPDATED: Changed 'migrate:fresh' to 'migrate' to save your data!
 # ADDED: 'db:seed' to make sure test users are always there (optional, remove if not needed)
