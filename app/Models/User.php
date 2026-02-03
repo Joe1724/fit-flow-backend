@@ -1,64 +1,32 @@
-<?php
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
-namespace App\Models;
-
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-class User extends Authenticatable
+public function login(Request $request)
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    // 1. Validate Input
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-    protected $fillable = [
-        'name',
-        'email',
-        'email_hash',
-        'password',
-        'role',
-        'avatar_url',
-    ];
+    // 2. Find User using the HASH, not the plain email
+    // We hash the input email to match the 'email_hash' column in your DB
+    $user = User::where('email_hash', hash('sha256', $request->email))->first();
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'email_hash',
-    ];
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'name' => 'encrypted',
-            'email' => 'encrypted',
-        ];
+    // 3. Check Password
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'message' => 'Invalid Credentials'
+        ], 422);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+    // 4. Create Token (Success!)
+    $token = $user->createToken('auth_token')->plainTextToken;
 
-        static::saving(function ($user) {
-            if ($user->isDirty('email')) {
-                $user->email_hash = hash('sha256', $user->email);
-            }
-        });
-    }
-
-    public function profile()
-    {
-        return $this->hasOne(MemberProfile::class);
-    }
-
-    public function subscriptions()
-    {
-        return $this->hasMany(Subscription::class);
-    }
-
-    public function activeSubscriptions()
-    {
-        return $this->hasOne(Subscription::class)->where('status', 'active');
-    }
+    return response()->json([
+        'message' => 'Login success',
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $user,
+    ]);
 }
