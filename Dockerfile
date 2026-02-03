@@ -1,4 +1,4 @@
-# Upgrade to PHP 8.3 to match modern Laravel defaults
+# Use PHP 8.3
 FROM php:8.3-cli
 
 # 1. Install system dependencies
@@ -28,12 +28,20 @@ WORKDIR /var/www/html
 # 6. Copy application code
 COPY . .
 
-# 7. Install dependencies (With flags to ignore version errors)
-# We use --ignore-platform-reqs to prevent "PHP version" errors
+# 7. Install dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# 8. Permission Fix
+# 8. GENERATE THE START SCRIPT (Fixes "File not found" error)
+# We write the script content directly into the container
+RUN printf "#!/bin/bash\n\
+set -e\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan migrate --force\n\
+php artisan serve --host=0.0.0.0 --port=\$PORT" > start.sh
+
+# 9. Make it executable
 RUN chmod +x start.sh
 
-# 9. Start
+# 10. Start the app
 CMD ["./start.sh"]
