@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-// FORCE UPDATE V2 - Fixes UserSeeder error
+// FINAL FIX - Manual Paste
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
