@@ -16,6 +16,9 @@ class UpdateProfileRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'phone' => 'sometimes|string|max:20',
+            'dob' => 'sometimes|date|before:today',
+            'gender' => 'sometimes|string|in:male,female,other',
+            'emergency_contact' => 'sometimes|string|max:255',
             'bio' => 'sometimes|string|max:500',
         ];
     }

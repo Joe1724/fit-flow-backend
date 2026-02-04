@@ -30,6 +30,7 @@ Route::prefix('v2')->group(function () {
                 'role' => $request->user()->role
             ]);
         });
+        Route::get('/profile', [AuthController::class, 'getProfile']);
         Route::put('/user/profile', [AuthController::class, 'updateProfile']);
         Route::put('/user/password', [AuthController::class, 'updatePassword']);
 

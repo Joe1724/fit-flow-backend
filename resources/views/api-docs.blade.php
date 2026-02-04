@@ -211,6 +211,48 @@ Authorization: Bearer {access_token}</pre>
                     </div>
                 </div>
 
+                <!-- Get Complete Profile -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="method-get text-white px-3 py-1 rounded text-xs font-bold">GET</span>
+                            <code class="text-gray-800 font-bold">/api/v2/profile</code>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-6">
+                            Get complete user profile including name, email, phone, date of birth, member since date, and emergency contact.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Headers</h4>
+                                <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
+Authorization: Bearer {access_token}</pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
+                                <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
+{
+  "data": {
+    "id": 5,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "member",
+    "member_since": "2026-01-15",
+    "profile": {
+      "phone": "555-1234",
+      "dob": "1990-01-15",
+      "gender": "male",
+      "emergency_contact": "Jane Doe - 555-5678",
+      "access_card_id": "CARD-12345"
+    }
+  }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Update Profile -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="p-6">
@@ -220,17 +262,20 @@ Authorization: Bearer {access_token}</pre>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
-                            Update user's name, phone, or bio.
+                            Update user's profile information. Users can only edit their own profile. All fields are optional.
                         </p>
 
                         <div class="space-y-4">
                             <div>
-                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Request Body</h4>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Request Body (All fields optional)</h4>
                                 <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
 {
   "name": "John Updated",
   "phone": "555-9999",
-  "bio": "Fitness enthusiast"
+  "dob": "1990-01-15",
+  "gender": "male",
+  "emergency_contact": "Jane Doe - 555-5678",
+  "bio": "Fitness enthusiast and gym regular"
 }</pre>
                             </div>
                             <div>
@@ -241,9 +286,14 @@ Authorization: Bearer {access_token}</pre>
   "data": {
     "id": 5,
     "name": "John Updated",
+    "email": "john@example.com",
+    "role": "member",
     "profile": {
       "phone": "555-9999",
-      "bio": "Fitness enthusiast"
+      "dob": "1990-01-15",
+      "gender": "male",
+      "emergency_contact": "Jane Doe - 555-5678",
+      "bio": "Fitness enthusiast and gym regular"
     }
   }
 }</pre>

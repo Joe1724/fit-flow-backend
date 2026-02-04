@@ -13,7 +13,8 @@ class MemberProfile extends Model
         'gender',
         'emergency_contact',
         'medical_history',
-        'access_card_id'
+        'access_card_id',
+        'bio'
     ];
 
     protected $casts = [

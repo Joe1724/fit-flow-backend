@@ -75,25 +75,29 @@ class AuthService
 
     public function updateProfile(User $user, array $data)
     {
+        // Update user name if provided
         if (isset($data['name'])) {
             $user->name = $data['name'];
+            $user->save();
         }
 
-        $user->save();
-
-        if (isset($data['phone']) || isset($data['bio'])) {
-            $profile = $user->profile;
-            
-            if (isset($data['phone'])) {
-                $profile->phone = $data['phone'];
-            }
-            
-            if (isset($data['bio'])) {
-                $profile->bio = $data['bio'];
-            }
-            
-            $profile->save();
+        // Get or create profile
+        $profile = $user->profile;
+        
+        if (!$profile) {
+            $profile = MemberProfile::create(['user_id' => $user->id]);
         }
+
+        // Update profile fields if provided
+        $profileFields = ['phone', 'dob', 'gender', 'emergency_contact', 'bio'];
+        
+        foreach ($profileFields as $field) {
+            if (isset($data[$field])) {
+                $profile->$field = $data[$field];
+            }
+        }
+        
+        $profile->save();
 
         return $user->load('profile');
     }
