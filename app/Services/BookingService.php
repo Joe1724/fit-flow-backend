@@ -33,4 +33,29 @@ class BookingService
             'status' => 'confirmed',
         ]);
     }
+
+    public function getUserBookings($user)
+    {
+        return Booking::where('user_id', $user->id)
+            ->with('gymClass')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public function cancelBooking($user, int $bookingId)
+    {
+        $booking = Booking::where('id', $bookingId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        if ($booking->status === 'cancelled') {
+            throw new Exception("This booking is already cancelled.");
+        }
+
+        $booking->delete();
+
+        return [
+            'message' => 'Booking cancelled successfully'
+        ];
+    }
 }
