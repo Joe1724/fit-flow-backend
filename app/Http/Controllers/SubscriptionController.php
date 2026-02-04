@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class SubscriptionController extends Controller
 {
@@ -32,5 +33,14 @@ class SubscriptionController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function mySubscriptions(Request $request): JsonResponse
+    {
+        $subscriptions = $this->subcriptionService->getUserSubscriptions($request->user());
+
+        return response()->json([
+            'data' => $subscriptions
+        ]);
     }
 }
