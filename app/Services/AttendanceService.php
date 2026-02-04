@@ -42,4 +42,10 @@ class AttendanceService
         return $activeSession;
     }
 
+    public function getUserAttendance($user)
+    {
+        return AttendanceLog::where('user_id', $user->id)
+            ->orderBy('check_in', 'desc')
+            ->get();
+    }
 }
