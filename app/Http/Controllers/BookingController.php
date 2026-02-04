@@ -34,5 +34,25 @@ class BookingController extends Controller
         }
     }
 
+    public function myBookings(Request $request): JsonResponse
+    {
+        $bookings = $this->bookingService->getUserBookings($request->user());
 
+        return response()->json([
+            'data' => $bookings
+        ]);
+    }
+
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        try {
+            $result = $this->bookingService->cancelBooking($request->user(), $id);
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }
