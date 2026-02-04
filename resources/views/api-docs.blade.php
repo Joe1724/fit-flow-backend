@@ -19,7 +19,7 @@
         <div class="container mx-auto px-6 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight text-orange-500">FitFlow <span class="text-white font-light">API</span></h1>
-                <p class="text-slate-400 text-sm mt-1">Fitness Management System Backend v1.0</p>
+                <p class="text-slate-400 text-sm mt-1">Fitness Management System Backend v2.0</p>
             </div>
             <div class="hidden md:block">
                 <span class="bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded-full text-xs font-semibold">
@@ -59,7 +59,7 @@
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/register</code>
+                            <code class="text-gray-800 font-bold">/api/v2/register</code>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
                             Register a new member account. Creates user profile and returns access token.
@@ -96,11 +96,11 @@
                 </div>
 
                 <!-- Login -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/login</code>
+                            <code class="text-gray-800 font-bold">/api/v2/login</code>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
                             Authenticates users via encrypted email lookup. Returns a personal access token (Sanctum).
@@ -111,7 +111,7 @@
                                 <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Request Body</h4>
                                 <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
 {
-  "email": "trainer@fitflow.com",
+  "email": "john@example.com",
   "password": "password123"
 }</pre>
                             </div>
@@ -119,13 +119,45 @@
                                 <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
                                 <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
 {
-  "message": "Login success",
-  "access_token": "token-string-here",
-  "user": {
-    "id": 1,
-    "name": "Coach Sarah",
-    "role": "trainer"
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "role": "member"
+    },
+    "token": "1|abc123xyz...",
+    "role": "member"
   }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
+                            <code class="text-gray-800 font-bold">/api/v2/logout</code>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-6">
+                            Revoke user's access token and log out from all devices.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Headers</h4>
+                                <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
+Authorization: Bearer {access_token}</pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
+                                <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
+{
+  "message": "Logged out successfully"
 }</pre>
                             </div>
                         </div>
@@ -140,15 +172,15 @@
                 </h2>
 
                 <!-- Get User Profile -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-get text-white px-3 py-1 rounded text-xs font-bold">GET</span>
-                            <code class="text-gray-800 font-bold">/api/user</code>
+                            <code class="text-gray-800 font-bold">/api/v2/user</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
-                            Get authenticated user's profile with member details.
+                            Get authenticated user's profile with member details and role.
                         </p>
 
                         <div class="space-y-4">
@@ -161,15 +193,92 @@ Authorization: Bearer {access_token}</pre>
                                 <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
                                 <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
 {
-  "id": 5,
-  "name": "John Doe",
-  "email": "john@example.com",
-  "role": "member",
-  "profile": {
-    "phone": "555-1234",
-    "dob": "1990-01-15",
-    "emergency_contact": "Jane Doe - 555-5678"
+  "data": {
+    "id": 5,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "member",
+    "profile": {
+      "phone": "555-1234",
+      "dob": "1990-01-15",
+      "emergency_contact": "Jane Doe - 555-5678"
+    }
+  },
+  "role": "member"
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Profile -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="method-post text-white px-3 py-1 rounded text-xs font-bold" style="background-color: #f59e0b;">PUT</span>
+                            <code class="text-gray-800 font-bold">/api/v2/user/profile</code>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-6">
+                            Update user's name, phone, or bio.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Request Body</h4>
+                                <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
+{
+  "name": "John Updated",
+  "phone": "555-9999",
+  "bio": "Fitness enthusiast"
+}</pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
+                                <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
+{
+  "message": "Profile updated successfully",
+  "data": {
+    "id": 5,
+    "name": "John Updated",
+    "profile": {
+      "phone": "555-9999",
+      "bio": "Fitness enthusiast"
+    }
   }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Update Password -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="method-post text-white px-3 py-1 rounded text-xs font-bold" style="background-color: #f59e0b;">PUT</span>
+                            <code class="text-gray-800 font-bold">/api/v2/user/password</code>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-6">
+                            Change user's password with old password verification.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Request Body</h4>
+                                <pre class="bg-slate-900 text-blue-300 p-4 rounded-lg text-xs">
+{
+  "old_password": "password123",
+  "new_password": "newpassword456",
+  "new_password_confirmation": "newpassword456"
+}</pre>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Success Response (200 OK)</h4>
+                                <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs">
+{
+  "message": "Password updated successfully"
 }</pre>
                             </div>
                         </div>
@@ -188,7 +297,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-get text-white px-3 py-1 rounded text-xs font-bold">GET</span>
-                            <code class="text-gray-800 font-bold">/api/plans</code>
+                            <code class="text-gray-800 font-bold">/api/v2/plans</code>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
                             Get all active membership plans available for subscription.
@@ -224,7 +333,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/plans</code>
+                            <code class="text-gray-800 font-bold">/api/v2/plans</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                             <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Admin Only</span>
                         </div>
@@ -272,7 +381,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/subscribe</code>
+                            <code class="text-gray-800 font-bold">/api/v2/subscribe</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
@@ -318,7 +427,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-get text-white px-3 py-1 rounded text-xs font-bold">GET</span>
-                            <code class="text-gray-800 font-bold">/api/classes</code>
+                            <code class="text-gray-800 font-bold">/api/v2/classes</code>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
                             Get all upcoming gym classes with trainer info and availability.
@@ -349,7 +458,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/classes</code>
+                            <code class="text-gray-800 font-bold">/api/v2/classes</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                             <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Trainer/Admin</span>
                         </div>
@@ -399,7 +508,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/bookings</code>
+                            <code class="text-gray-800 font-bold">/api/v2/bookings</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
@@ -444,7 +553,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/attendance/check-in</code>
+                            <code class="text-gray-800 font-bold">/api/v2/attendance/check-in</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
@@ -482,7 +591,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/attendance/check-out</code>
+                            <code class="text-gray-800 font-bold">/api/v2/attendance/check-out</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
@@ -518,7 +627,7 @@ Authorization: Bearer {access_token}</pre>
                     <div class="p-6">
                         <div class="flex items-center space-x-4 mb-4">
                             <span class="method-post text-white px-3 py-1 rounded text-xs font-bold">POST</span>
-                            <code class="text-gray-800 font-bold">/api/payments</code>
+                            <code class="text-gray-800 font-bold">/api/v2/payments</code>
                             <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">🔒 Auth Required</span>
                         </div>
                         <p class="text-gray-600 text-sm mb-6">
