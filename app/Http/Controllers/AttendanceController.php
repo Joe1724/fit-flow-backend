@@ -43,4 +43,13 @@ class AttendanceController extends Controller
             return response()->json(['message' => $e-> getMessage()], 400);
         }
     }
+
+    public function myAttendance(Request $request): JsonResponse
+    {
+        $attendance = $this->attendanceService->getUserAttendance($request->user());
+
+        return response()->json([
+            'data' => $attendance
+        ]);
+    }
 }
