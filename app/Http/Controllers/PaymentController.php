@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
@@ -32,5 +33,14 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
+    }
+
+    public function myPayments(Request $request): JsonResponse
+    {
+        $payments = $this->paymentService->getUserPayments($request->user());
+
+        return response()->json([
+            'data' => $payments
+        ]);
     }
 }
