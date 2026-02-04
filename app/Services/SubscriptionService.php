@@ -34,4 +34,12 @@ class SubscriptionService
         ]);
 
     }
+
+    public function getUserSubscriptions($user)
+    {
+        return Subscription::where('user_id', $user->id)
+            ->with('plan')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
 }
