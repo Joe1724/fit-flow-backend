@@ -62,4 +62,55 @@ class AuthService
             'role' => $user->role,
         ];
     }
+
+    public function logoutUser(User $user)
+    {
+        // Delete the current access token
+        $user->tokens()->delete();
+
+        return [
+            'message' => 'Logged out successfully'
+        ];
+    }
+
+    public function updateProfile(User $user, array $data)
+    {
+        if (isset($data['name'])) {
+            $user->name = $data['name'];
+        }
+
+        $user->save();
+
+        if (isset($data['phone']) || isset($data['bio'])) {
+            $profile = $user->profile;
+            
+            if (isset($data['phone'])) {
+                $profile->phone = $data['phone'];
+            }
+            
+            if (isset($data['bio'])) {
+                $profile->bio = $data['bio'];
+            }
+            
+            $profile->save();
+        }
+
+        return $user->load('profile');
+    }
+
+    public function updatePassword(User $user, string $oldPassword, string $newPassword)
+    {
+        if (!Hash::check($oldPassword, $user->password)) {
+            throw ValidationException::withMessages([
+                'old_password' => ['The old password is incorrect.'],
+            ]);
+        }
+
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        return [
+            'message' => 'Password updated successfully'
+        ];
+    }
 }
