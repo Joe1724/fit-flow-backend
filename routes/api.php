@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt; // <--- Added for manual decryption
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlanController;
@@ -10,60 +9,54 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\GymClassController;
 use App\Http\Controllers\AttendanceController; 
 use App\Http\Controllers\SubscriptionController;
-use App\Models\User; // <--- Added for the debug route
 
-// Public Routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/plans', [PlanController::class, 'index']);
-Route::get('/classes', [GymClassController::class, 'index']);
-
-// Protected Routes
-Route::middleware('auth:sanctum')->group(function () {
+// ============================================
+// V2 API Routes
+// ============================================
+Route::prefix('v2')->group(function () {
     
-    // Get User Profile
-    Route::get('/user', function (Request $request) {
-        return $request->user()->load('profile');
+    // Public Routes
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    // Protected Routes (All Authenticated Users)
+    Route::middleware('auth:sanctum')->group(function () {
+        
+        // Authentication & Account Management
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/user', function (Request $request) {
+            return response()->json([
+                'data' => $request->user()->load('profile'),
+                'role' => $request->user()->role
+            ]);
+        });
+        Route::put('/user/profile', [AuthController::class, 'updateProfile']);
+        Route::put('/user/password', [AuthController::class, 'updatePassword']);
+
+        // Membership & Finance (Members)
+        Route::get('/plans', [PlanController::class, 'index']);
+        Route::get('/my-subscriptions', [SubscriptionController::class, 'mySubscriptions']);
+        Route::post('/subscribe', [SubscriptionController::class, 'store']);
+        Route::get('/my-payments', [PaymentController::class, 'myPayments']);
+        Route::post('/payments', [PaymentController::class, 'store']);
+
+        // Bookings & Attendance (Members)
+        Route::get('/classes', [GymClassController::class, 'index']);
+        Route::get('/my-bookings', [BookingController::class, 'myBookings']);
+        Route::post('/bookings', [BookingController::class, 'store']);
+        Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
+        Route::get('/my-attendance', [AttendanceController::class, 'myAttendance']);
+        Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
+        Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
     });
 
-    // Plans & Subscriptions
-    Route::post('/plans', [PlanController::class, 'store']);
-    Route::post('/subscribe', [SubscriptionController::class, 'store']);
-
-    // Classes & Bookings
-    Route::post('/classes', [GymClassController::class, 'store']);
-    Route::post('/bookings', [BookingController::class, 'store']);
-
-    // Attendance 
-    Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
-    Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
-
-    // Payment
-    Route::post('/payments', [PaymentController::class, 'store']);
-});
-
-// ----------------------------------------------------------------------
-// TEMP: Debug Route to show Decryption working
-// Open http://127.0.0.1:8000/api/debug-encryption in your browser
-// ----------------------------------------------------------------------
-Route::get('/debug-encryption', function () {
-    // 1. Get the first user (Admin)
-    $user = User::first();
-
-    if (!$user) {
-        return response()->json(['message' => 'No users found. Run migration/seeder first.'], 404);
-    }
-
-    return response()->json([
-        '1_explanation' => 'Laravel automatically decrypts fields listed in "casts" inside User.php',
+    // Admin Only Routes
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         
-        // This grabs the RAW encrypted string directly from the DB column (Gibberish)
-        '2_raw_database_value' => $user->getAttributes()['email'], 
+        // Plan Management
+        Route::post('/plans', [PlanController::class, 'store']);
         
-        // This accesses the property normally. Laravel decrypts it for you automatically! (Readable)
-        '3_automatic_decryption' => $user->email,
-
-        // This proves we can decrypt it manually using the Crypt facade
-        '4_manual_decryption_proof' => Crypt::decryptString($user->getAttributes()['email']),
-    ]);
+        // Class Management
+        Route::post('/classes', [GymClassController::class, 'store']);
+    });
 });
