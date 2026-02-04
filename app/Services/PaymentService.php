@@ -39,4 +39,12 @@ class PaymentService
             return $payment;
         });
     }
+
+    public function getUserPayments($user)
+    {
+        return Payment::where('user_id', $user->id)
+            ->with('subscription.plan')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
 }
